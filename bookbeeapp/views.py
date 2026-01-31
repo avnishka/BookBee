@@ -213,20 +213,20 @@ def payment_success(request):
     cart = Cart.objects.get(user=request.user)
 
 # Loop through cart items and save an Order for each
-for book in cart.items.all():
-    Order.objects.create(
-        buyer=request.user,
-        seller=book.owner,
-        book=book
-    )
+    for book in cart.items.all():
+        Order.objects.create(
+            buyer=request.user,
+            seller=book.owner,
+            book=book
+        )
 
     # Mark book as sold or lended
     book.status = 'LENDED' if book.transaction_type == 'rent' else 'SOLD'
     book.save()
 
-cart.items.clear()
-messages.success(request, "Payment Successful! Order Placed. 🐝")
-return redirect('home')
+    cart.items.clear()
+    messages.success(request, "Payment Successful! Order Placed. 🐝")
+    return redirect('home')
 
 
 @login_required(login_url='login')
