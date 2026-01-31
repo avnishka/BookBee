@@ -1,344 +1,234 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}Profile | BookBee{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>{{ user.username }}'s Profile | BookBee</title>
+{% block content %}
+<style>
+    /* --- PAGE LAYOUT --- */
+    .profile-wrapper {
+        max-width: 800px; /* Made wider so side-by-side fits better */
+        margin: 40px auto;
+        padding: 0 20px;
+    }
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #4A2C1A;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
-    <style>
-        /* --- KEEPING YOUR EXACT CSS --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+    /* --- PROFILE CARD (White Box) --- */
+    .profile-card {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        display: flex;          /* Places Avatar LEFT and Details RIGHT */
+        align-items: center;    /* Vertically centers them */
+        gap: 30px;              /* Space between Avatar and Text */
+        margin-bottom: 40px;
+        position: relative;
+    }
 
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8f3ee, #e7ded5);
-            display: flex;
-            justify-content: center;
-            padding: 40px 15px;
-            transition: 0.3s ease;
-        }
+    /* Left Side: Avatar */
+    .profile-left {
+        flex-shrink: 0;
+        text-align: center;
+        width: 140px;
+    }
 
-        body.dark {
-            background: linear-gradient(135deg, #1e1e1e, #121212);
-        }
+    .profile-pic-container {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid #FFC83D;
+        overflow: hidden;
+        margin: 0 auto;
+    }
 
-        .profile-container {
-            width: 100%;
-            max-width: 520px;
-        }
+    .profile-pic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-        /* Dark Mode Button */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 50%;
-            cursor: pointer;
-            background: #3e2f23;
-            color: #fff;
-            font-size: 16px;
-        }
+    .choose-btn {
+        display: block;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #666;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
-        /* Cards */
-        .profile-card,
-        .review-card,
-        .history-card {
-            background: #ffffff;
-            padding: 22px;
-            border-radius: 16px;
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
-            margin-bottom: 28px;
-            transition: 0.3s ease;
-        }
+    /* Avatar Popup Grid */
+    .avatar-grid {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: 100%;
+        left: 20px;
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 100;
+        width: 200px;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .avatar-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 2px solid transparent;
+    }
+    .avatar-option:hover {
+        transform: scale(1.1);
+        border-color: #FFC83D;
+    }
 
-        body.dark .profile-card,
-        body.dark .review-card,
-        body.dark .history-card {
-            background: #1f1f1f;
-            color: #eaeaea;
-        }
+    /* Right Side: User Details */
+    .profile-details h2 {
+        margin: 0 0 5px 0;
+        color: #4A2C1A;
+        font-size: 1.8rem;
+    }
+    
+    .profile-details p {
+        margin: 5px 0;
+        color: #666;
+    }
 
-        /* Profile Card */
-        .profile-card {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+    .edit-btn {
+        margin-top: 15px;
+        padding: 8px 20px;
+        background: #D4B996;
+        color: #4A2C1A;
+        border: none;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
-        .profile-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    /* --- REVIEWS & HISTORY SECTIONS --- */
+    .section-title {
+        color: #4A2C1A;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #FFC83D;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
 
-        .profile-pic {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 4px solid #d4b996;
-            object-fit: cover;
-        }
+    .info-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
+</style>
 
-        .choose-pic {
-            margin-top: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #3e2f23;
-        }
+<div class="profile-wrapper">
+    
+    <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
 
-        .avatar-picker {
-            display: none;
-            margin-top: 10px;
-            gap: 10px;
-        }
-
-        .avatar-picker img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.3s;
-        }
-
-        .avatar-picker img:hover {
-            border-color: #3e2f23;
-            transform: scale(1.05);
-        }
-
-        h2,
-        h3,
-        h4 {
-            color: #3e2f23;
-        }
-
-        body.dark h2,
-        body.dark h3,
-        body.dark h4 {
-            color: #f5f5f5;
-        }
-
-        p {
-            font-size: 14px;
-            color: #6b5b4d;
-        }
-
-        body.dark p {
-            color: #cfcfcf;
-        }
-
-        .edit-btn {
-            margin-top: 10px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: none;
-            background: #d4b996;
-            color: #3e2f23;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .edit-btn:hover {
-            background: #3e2f23;
-            color: #fff;
-        }
-
-        /* Tabs */
-        .tab-container {
-            display: flex;
-            justify-content: center;
-            background: #e9e1d8;
-            border-radius: 30px;
-            padding: 6px;
-            margin: 0 auto 22px;
-            width: fit-content;
-        }
-
-        body.dark .tab-container {
-            background: #2b2b2b;
-        }
-
-        .tab {
-            border: none;
-            padding: 8px 24px;
-            border-radius: 22px;
-            cursor: pointer;
-            background: transparent;
-            font-weight: 500;
-            color: #5a4635;
-        }
-
-        .tab.active {
-            background: #3e2f23;
-            color: #ffffff;
-        }
-
-        body.dark .tab.active {
-            background: #f5f5f5;
-            color: #121212;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .status {
-            margin-top: 6px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .status.delivered {
-            color: #2e7d32;
-        }
-
-        .status.pending {
-            color: #f57c00;
-        }
-
-        /* Navbar Return Link */
-        .back-home {
-            margin-bottom: 20px;
-            display: block;
-            text-decoration: none;
-            color: #3e2f23;
-            font-weight: bold;
-        }
-    </style>
-</head>
-
-<body>
-
-    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-
-    <div class="profile-container">
-
-        <a href="{% url 'home' %}" class="back-home">← Back to Home</a>
-
-        <div class="profile-card">
-            <div class="profile-left">
-                {% if user.profile_photo %}
-                <img id="profilePic" src="{{ user.profile_photo.url }}" class="profile-pic">
+    <div class="profile-card">
+        
+        <div class="profile-left">
+            <div class="profile-pic-container">
+                {% if user_profile.avatar %}
+                    <img src="{% static user_profile.avatar %}" class="profile-pic">
                 {% else %}
-                <img id="profilePic"
-                    src="https://ui-avatars.com/api/?name={{ user.username }}&background=d4b996&color=3e2f23"
-                    class="profile-pic">
+                    <div style="width:100%; height:100%; background:#FFC83D; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#4A2C1A; font-weight:bold;">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
                 {% endif %}
-
-                <span class="choose-pic" onclick="toggleAvatarPicker()">Choose avatar</span>
-
-                <div class="avatar-picker">
-                    <img src="{% static 'avatars/av1.png' %}" onclick="setAvatar(this.src)">
-                    <img src="{% static 'avatars/av2.png' %}" onclick="setAvatar(this.src)">
-                </div>
             </div>
 
-            <div>
-                <h2>{{ user.first_name }} {{ user.last_name }}</h2>
-                <p>@{{ user.username }}</p>
-                <p>📧 {{ user.email }}</p>
+            <span class="choose-btn" onclick="togglePicker()">Choose avatar ▾</span>
 
-                {% if user.location %}
-                <p>📍 {{ user.location }}</p>
-                {% endif %}
-
-                <button class="edit-btn">Edit Profile</button>
+            <div id="avatarPicker" class="avatar-grid">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for avatar_name in available_avatars %}
+                    <button type="submit" name="selected_avatar" value="{{ avatar_name }}" style="border:none; background:none; padding:0;">
+                        <img src="{% static 'images/'|add:avatar_name %}" class="avatar-option" title="{{ avatar_name }}">
+                    </button>
+                    {% endfor %}
+                </form>
             </div>
         </div>
 
-        <div class="section">
-            <h3>Reviews on your Books</h3>
-
-            {% if received_reviews %}
-            {% for review in received_reviews %}
-            <div class="review-card">
-                <h4>{{ review.book.title }}</h4>
-                <p>
-                    {% if review.rating == 5 %}⭐⭐⭐⭐⭐
-                    {% elif review.rating == 4 %}⭐⭐⭐⭐
-                    {% else %}⭐⭐⭐{% endif %}
-                </p>
-                <p>“{{ review.comment }}”</p>
-                <p style="font-size: 0.8rem; margin-top: 5px;">- {{ review.author.username }}</p>
-            </div>
-            {% endfor %}
-            {% else %}
-            <p style="text-align: center; color: #888;">No reviews yet.</p>
+        <div class="profile-details">
+            <h2>@{{ user.username }}</h2>
+            <p>📧 {{ user.email }}</p>
+            {% if user.first_name %}
+                <p>👤 {{ user.first_name }} {{ user.last_name }}</p>
             {% endif %}
-        </div>
-
-        <div class="section">
-            <h3>Book History</h3>
-
-            <div class="tab-container">
-                <button class="tab active" onclick="openTab('lent', this)">My Books (Lent)</button>
-                <button class="tab" onclick="openTab('borrowed', this)">Borrowed</button>
-            </div>
-
-            <div id="lent" class="tab-content active">
-                {% if lent_books %}
-                {% for book in lent_books %}
-                <div class="history-card">
-                    <h4>{{ book.title }}</h4>
-                    <p>Price: ₹{{ book.price }}</p>
-                    <p>Status:
-                        <span class="status {% if book.status == 'AVAILABLE' %}delivered{% else %}pending{% endif %}">
-                            {{ book.status }}
-                        </span>
-                    </p>
-                </div>
-                {% endfor %}
-                {% else %}
-                <p style="text-align: center; padding: 20px;">You haven't uploaded any books yet.</p>
-                {% endif %}
-            </div>
-
-            <div id="borrowed" class="tab-content">
-                <div class="history-card">
-                    <p style="text-align: center;">Borrowed history feature coming soon!</p>
-                </div>
-            </div>
+            <button class="edit-btn">Edit Profile</button>
         </div>
 
     </div>
+    <div>
+        <h3 class="section-title">Reviews on your Books</h3>
+        {% if received_reviews %}
+            {% for review in received_reviews %}
+            <div class="info-card">
+                <strong>{{ review.book.title }}</strong>
+                <span style="color:#F59E0B">
+                    {% if review.rating >= 4 %}⭐⭐⭐⭐⭐{% else %}⭐⭐⭐{% endif %}
+                </span>
+                <p>"{{ review.comment }}"</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:#888; font-style:italic;">No reviews yet.</p>
+        {% endif %}
+    </div>
 
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle("dark");
+    <div style="margin-top: 40px;">
+        <h3 class="section-title">Book History</h3>
+        
+        <div style="background:#eee; display:inline-flex; border-radius:20px; padding:5px; margin-bottom:20px;">
+            <div style="background:#4A2C1A; color:white; padding:8px 20px; border-radius:15px; font-weight:bold;">My Books (Lent)</div>
+            <div style="padding:8px 20px; color:#666;">Borrowed</div>
+        </div>
+
+        {% if lent_books %}
+            {% for book in lent_books %}
+            <div class="info-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h4 style="margin:0;">{{ book.title }}</h4>
+                    <span style="color:green; font-size:0.9rem;">Status: {{ book.status }}</span>
+                </div>
+                <div style="font-weight:bold; color:#4A2C1A;">₹{{ book.price }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="info-card">You haven't added any books yet.</div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    function togglePicker() {
+        var picker = document.getElementById('avatarPicker');
+        if (picker.style.display === 'flex') {
+            picker.style.display = 'none';
+        } else {
+            picker.style.display = 'flex';
         }
+    }
+</script>
 
-        function openTab(tabName, el) {
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-            document.getElementById(tabName).classList.add("active");
-            el.classList.add("active");
-        }
-
-        function toggleAvatarPicker() {
-            const picker = document.querySelector(".avatar-picker");
-            picker.style.display = picker.style.display === "flex" ? "none" : "flex";
-        }
-
-        function setAvatar(src) {
-            document.getElementById("profilePic").src = src;
-        }
-    </script>
-
-</body>
-
-</html>
+{% endblock %}

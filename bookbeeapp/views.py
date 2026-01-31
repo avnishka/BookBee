@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm 
 from .forms import BookForm
-from .models import Book, Review, Cart 
+from .models import Book, Review, Cart , UserProfile
 
 def signup_view(request):
     if request.method == "POST":
@@ -179,3 +179,43 @@ def payment_success(request):
     cart.items.clear() # Empty the cart
     messages.success(request, "Payment Successful! Order Placed. 🐝")
     return redirect('home')
+
+@login_required(login_url='login')
+def profile(request):
+    # 1. Get or Create UserProfile
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    # 2. Define available avatars (must match filenames in static/images/)
+    available_avatars = ['av1.png', 'av2.png', 'av3.png', 'av4.png', 'av5.png']
+
+    if request.method == 'POST':
+        print("--- POST REQUEST RECEIVED ---") # Debug print 1
+        
+        # Check if the avatar selection data was sent
+        if 'selected_avatar' in request.POST:
+            avatar_filename = request.POST.get('selected_avatar')
+            print(f"Selected Avatar: {avatar_filename}") # Debug print 2
+            
+            # 3. Update the database field
+            # We save the path relative to the static folder
+            new_path = f"images/{avatar_filename}"
+            user_profile.avatar = new_path
+            user_profile.save()
+            print(f"Saved to DB: {new_path}") # Debug print 3
+            
+            # Force a redirect to refresh the page content
+            return redirect('profile')
+        else:
+            print("No 'selected_avatar' found in POST data")
+
+    # ... (rest of your context and render code) ...
+    lent_books = Book.objects.filter(owner=request.user)
+    received_reviews = Review.objects.filter(book__owner=request.user)
+
+    context = {
+        'user_profile': user_profile,
+        'lent_books': lent_books,
+        'received_reviews': received_reviews,
+        'available_avatars': available_avatars,
+    }
+    return render(request, 'profile.html', context)
