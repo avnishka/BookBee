@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -11,6 +12,8 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, help_text="Rent per day or Sale price")
     security_amount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, blank=True, null=True)
     location = models.CharField(max_length=150)
+    pincode = models.CharField(max_length=6, blank=True)
+    is_available = models.BooleanField(default=True)
     
     # --- THIS WAS MISSING ---
     description = models.TextField(blank=True, null=True) 
@@ -22,6 +25,13 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        match = re.search(r'\b\d{6}\b', self.location)
+        if match:
+            self.pincode = match.group()
+        super().save(*args, **kwargs)
+
 
 class Review(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)

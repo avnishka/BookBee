@@ -25,22 +25,28 @@
         justify-content: center;
         gap: 10px;
         margin: -25px auto 30px;
-        max-width: 600px;
+        max-width: 800px;
         padding: 0 20px;
+        flex-wrap: wrap;
     }
 
-    .search-bar input {
-        flex: 1;
-        padding: 15px 20px;
+    .search-bar input,
+    .search-bar select {
+        padding: 12px 18px;
         border-radius: 30px;
         border: 2px solid #fff;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         outline: none;
-        font-size: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .search-bar input[type="text"] {
+        flex: 1;
+        min-width: 200px;
     }
 
     .search-btn {
-        padding: 0 30px;
+        padding: 12px 30px;
         background: #2E7D32;
         color: white;
         border: none;
@@ -55,7 +61,7 @@
         transform: scale(1.05);
     }
 
-    /* --- OLX-STYLE FLOATING SELL BUTTON --- */
+    /* --- FLOATING SELL BUTTON --- */
     .sell-btn-floating {
         position: fixed;
         bottom: 30px;
@@ -81,18 +87,12 @@
         transform: translateX(-50%) scale(1.1);
     }
 
-    .sell-btn-floating span {
-        font-size: 1.5rem;
-        line-height: 1;
-    }
-
     /* --- BOOK GRID --- */
     .book-feed {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 25px;
         padding: 20px 50px 100px;
-        /* Extra padding bottom for floating button */
         max-width: 1200px;
         margin: 0 auto;
     }
@@ -137,9 +137,6 @@
     .location-tag {
         font-size: 0.8rem;
         color: #888;
-        display: flex;
-        align-items: center;
-        gap: 5px;
         margin-top: 10px;
     }
 </style>
@@ -149,16 +146,18 @@
     <p>Your local community library, online.</p>
 </div>
 
-<div class="search-bar">
-    <input type="text" placeholder="Find a book nearby...">
-    <button class="search-btn">Search</button>
-</div>
 
 <a href="{% url 'add_book' %}" class="sell-btn-floating">
     <span>+</span> LEND / SELL
 </a>
 
-<h3 style="text-align: center; color: #444; margin-bottom: 20px;">Fresh Recommendations</h3>
+<h3 style="text-align: center; color: #444; margin-bottom: 20px;">
+    {% if request.GET.q or request.GET.price or request.GET.pincode %}
+        Search Results
+    {% else %}
+        Fresh Recommendations
+    {% endif %}
+</h3>
 
 <div class="book-feed">
     {% for book in books %}
@@ -171,7 +170,7 @@
             {% endif %}
 
             <div class="info">
-                <h4 style="margin:0; font-size:1.1rem;">{{ book.title }}</h4>
+                <h4 style="margin:0;">{{ book.title }}</h4>
                 <div class="price">₹{{ book.price }}</div>
                 <div class="location-tag">📍 {{ book.location }}</div>
             </div>
@@ -179,8 +178,7 @@
     </a>
     {% empty %}
     <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">
-        <p>No books available yet.</p>
-        <p>Click the big <strong>+ LEND</strong> button to add the first one!</p>
+        <p>No books found for your search 😕</p>
     </div>
     {% endfor %}
 </div>

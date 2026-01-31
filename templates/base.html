@@ -108,16 +108,22 @@
     <nav class="navbar">
         <div class="logo">BookBee 🐝</div>
 
-        <div class="search-bar-container">
-            <input type="text" placeholder="Search books by name, author...">
-            <select>
-                <option>Sort by Price</option>
-            </select>
-            <select>
-                <option>Location</option>
-            </select>
-            <button class="search-btn">Search</button>
-        </div>
+            <form method="GET" action="{% url 'home' %}" class="search-bar-container">
+                <input type="text" name="q" placeholder="Search books..." />
+    
+                <select name="price">
+                    <option value="">Price Range</option>
+                    <option value="0-100">₹0–₹100</option>
+                    <option value="100-300">₹100–₹300</option>
+                    <option value="300-500">₹300–₹500</option>
+                </select>
+
+                <input type="text" name="pincode" placeholder="Enter Pincode" />
+
+                <button type="submit">Search</button>
+            </form>
+
+
 
         <div class="nav-links">
             <a href="{% url 'home' %}">Home</a>
