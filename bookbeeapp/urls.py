@@ -20,6 +20,7 @@ urlpatterns = [
     path('cart/remove/<int:pk>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment-success/', views.payment_success, name='payment_success'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

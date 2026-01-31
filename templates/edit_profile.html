@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="edit-profile-wrapper">
+    <div class="edit-profile-card">
+        <h2 class="edit-title">Edit Profile</h2>
+        <p class="edit-subtitle">Update your personal information</p>
+
+        <form method="post" class="edit-profile-form">
+            {% csrf_token %}
+            {% if form.errors %}
+    <div class="form-errors">
+        {{ form.errors }}
+    </div>
+            {% endif %}
+
+
+            <div class="form-group">
+    <label>Username</label>
+    {{ form.username }}
+
+    {% if form.username.errors %}
+        <div class="field-error">
+            {{ form.username.errors.0 }}
+        </div>
+    {% endif %}
+</div>
+
+
+            <div class="form-group">
+                <label>Email</label>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                <label>First Name</label>
+                {{ form.first_name }}
+            </div>
+
+            <div class="form-group">
+                <label>Last Name</label>
+                {{ form.last_name }}
+            </div>
+
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+
+        <a href="{% url 'profile' %}" class="back-link">← Back to Profile</a>
+    </div>
+</div>
+{% endblock %}

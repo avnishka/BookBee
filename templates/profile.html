@@ -168,14 +168,19 @@
             </div>
         </div>
 
-        <div class="profile-details">
-            <h2>@{{ user.username }}</h2>
-            <p>📧 {{ user.email }}</p>
-            {% if user.first_name %}
-                <p>👤 {{ user.first_name }} {{ user.last_name }}</p>
-            {% endif %}
-            <button class="edit-btn">Edit Profile</button>
-        </div>
+        <div>
+                <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                <p>@{{ user.username }}</p>
+                <p>📧 {{ user.email }}</p>
+
+                {% if user.location %}
+                <p>📍 {{ user.location }}</p>
+                {% endif %}
+
+                <a href="{% url 'edit_profile' %}">
+                    <button class="edit-btn">Edit Profile</button>
+                </a>
+            </div>
 
     </div>
     <div>

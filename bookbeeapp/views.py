@@ -4,8 +4,9 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm 
-from .forms import BookForm
+from .forms import BookForm, EditProfileForm 
 from .models import Book, Review, Cart , UserProfile
+
 
 def signup_view(request):
     if request.method == "POST":
@@ -182,6 +183,7 @@ def payment_success(request):
 
 @login_required(login_url='login')
 def profile(request):
+
     # 1. Get or Create UserProfile
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
@@ -219,3 +221,19 @@ def profile(request):
         'available_avatars': available_avatars,
     }
     return render(request, 'profile.html', context)
+
+@login_required(login_url='login')
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully ✨")
+            return redirect('profile')
+
+        # IMPORTANT: render immediately if invalid
+        return render(request, 'edit_profile.html', {'form': form})
+
+    form = EditProfileForm(instance=request.user)
+    return render(request, 'edit_profile.html', {'form': form})

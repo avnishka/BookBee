@@ -7,6 +7,99 @@
     <title>BookBee 🐝</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .edit-profile-wrapper {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+}
+
+.edit-profile-card {
+    background: #ffffff;
+    width: 420px;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.edit-title {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 4px;
+}
+
+.edit-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.edit-profile-form .form-group {
+    margin-bottom: 18px;
+}
+
+.edit-profile-form label {
+    display: block;
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.edit-profile-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.edit-profile-form input:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+.save-btn {
+    width: 100%;
+    padding: 11px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.save-btn:hover {
+    background: #256628;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    color: #2e7d32;
+    text-decoration: none;
+    font-size: 14px;
+}
+.form-errors {
+    background: #fdecea;
+    color: #b71c1c;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+.field-error {
+    color: #c62828;
+    font-size: 13px;
+    margin-top: 4px;
+}
+    </style>
 </head>
 
 <body>
