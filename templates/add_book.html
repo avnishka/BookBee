@@ -54,7 +54,6 @@
             border: 1px solid #ddd;
             font-size: 14px;
             box-sizing: border-box;
-            /* Fixes padding issues */
         }
 
         /* Location Wrapper for the Button */
@@ -72,9 +71,7 @@
             color: white;
             font-size: 12px;
             margin-top: 0;
-            /* Align with input */
             height: 42px;
-            /* Match input height */
         }
 
         .detect-btn:hover {
@@ -112,7 +109,10 @@
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.non_field_errors }}
+            
+            <div style="color: red; margin-bottom: 10px;">
+                {{ form.non_field_errors }}
+            </div>
 
             <label>Title:</label>
             {{ form.title }}
@@ -122,6 +122,9 @@
 
             <label>Description:</label>
             {{ form.description }}
+
+            <label>Genre:</label>
+            {{ form.genre }}
 
             <label>Price:</label>
             {{ form.price }}

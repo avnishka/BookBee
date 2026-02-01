@@ -194,28 +194,37 @@ def checkout(request):
 @login_required(login_url='login')
 def payment_success(request):
     # 1. Get the user's cart
-    cart = get_object_or_404(Cart, user=request.user)
+    cart = Cart.objects.get(user=request.user)
     
-    # 2. Process each book in the cart
+    # 2. Process each book
     for book in cart.items.all():
-        # Create the Order record (Proof of purchase)
+        # A. Create the Order Record (Proof of purchase/rent)
+        # IMPORTANT: We do this BEFORE changing ownership so we record the correct seller.
         Order.objects.create(
             buyer=request.user,
-            seller=book.owner,
+            seller=book.owner, 
             book=book
         )
         
-        # --- CRITICAL FIX: MARK AS UNAVAILABLE ---
-        # We explicitly set BOTH the status text and the boolean flag
+        # B. RENT vs BUY Logic
         if book.transaction_type == 'rent':
+            # --- SCENARIO 1: RENT ---
+            # ERROR FIX: Do NOT change book.owner
+            # The owner stays as the original lender (e.g., Abhya)
             book.status = 'LENDED'
-        else:
-            book.status = 'SOLD'
+            book.is_available = False  
             
-        book.is_available = False  # This flag is what the Home page looks for
-        book.save()  # <--- This saves the change to the database
+        else:
+            # --- SCENARIO 2: BUY ---
+            # Ownership transfers to YOU (Buyer)
+            book.owner = request.user 
+            book.status = 'SOLD'       
+            book.is_available = False  
 
-    # 3. Clear the cart and redirect
+        # C. Save the changes to the database
+        book.save()
+
+    # 3. Clear cart and finish
     cart.items.clear()
     messages.success(request, "Payment Successful! Order Placed. 🐝")
     return redirect('home')
