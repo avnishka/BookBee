@@ -1,16 +1,193 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>Chat with {{ other_user.username }}</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(180deg, #FCE4EC 0%, #E3F2FD 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
 
-<div>
-    {% for msg in messages %}
-        <p><b>{{ msg.sender.username }}:</b> {{ msg.text }}</p>
-    {% endfor %}
+    .chat-container {
+        width: 100%;
+        max-width: 700px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        background: #FFFFFF;
+        border-radius: 28px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        border: 1px solid #E3EAFD;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 22px 22px;
+        background: linear-gradient(135deg, #F8BBD0, #BBDEFB);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .chat-avatar {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 20px;
+        color: #4A148C;
+        flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,0.7);
+    }
+
+    .chat-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 50%;
+    }
+
+    .messages {
+        flex: 1;
+        padding: 18px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #FFFFFF;
+    }
+
+    .message {
+        max-width: 75%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        font-size: 14px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .sent {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #F48FB1, #CE93D8);
+        color: #4A148C;
+        border-bottom-right-radius: 6px;
+    }
+
+    .received {
+        align-self: flex-start;
+        background: #FFFFFF;
+        border: 1px solid #E3F2FD;
+        border-bottom-left-radius: 6px;
+    }
+
+    .time {
+        font-size: 10px;
+        margin-top: 4px;
+        opacity: 0.7;
+        text-align: right;
+    }
+
+    .chat-input {
+        padding: 14px;
+        background: #F8F9FF;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #E3EAFD;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 25px;
+        border: 1px solid #E1BEE7;
+        outline: none;
+        font-family: inherit;
+        background: #FFFFFF;
+    }
+
+    .chat-input button {
+        padding: 12px 18px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(135deg, #F06292, #64B5F6);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .chat-input button:hover {
+        opacity: 0.9;
+    }
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+<div class="chat-header">
+    <div class="chat-avatar">
+        {% if request.user == room.borrower %}
+            {% if room.lender.userprofile.avatar %}
+                <img src="{{ room.lender.userprofile.avatar.url }}" alt="avatar">
+            {% else %}
+                {{ room.lender.username|first|upper }}
+            {% endif %}
+        {% else %}
+            {% if room.borrower.userprofile.avatar %}
+                <img src="{{ room.borrower.userprofile.avatar.url }}" alt="avatar">
+            {% else %}
+                {{ room.borrower.username|first|upper }}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div>
+        <div style="font-size:16px; font-weight:bold;">
+            {% if request.user == room.borrower %}
+                {{ room.lender.username }}
+            {% else %}
+                {{ room.borrower.username }}
+            {% endif %}
+        </div>
+        <div style="font-size:12px; opacity:0.8; color:#f0f4ff;">
+            {{ room.book.title }}
+        </div>
+    </div>
 </div>
 
-<form method="POST">
-    {% csrf_token %}
-    <input type="text" name="message" required>
-    <button type="submit">Send</button>
-</form>
-{% endblock %}
+ <div class="messages" id="chatBox">
+        {% for msg in messages %}
+            <div class="message {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                {{ msg.text }}
+                <div class="time">{{ msg.created_at|date:"H:i" }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#888;">No messages yet. Start chatting! 🐝</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="chat-input">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type a message..." required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+    var chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+
+</body>
+</html>

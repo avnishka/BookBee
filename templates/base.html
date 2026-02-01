@@ -117,27 +117,20 @@
         </a>
 
         <div class="nav-links">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'chat_list' %}">Chats</a>
-            <a href="{% url 'cart_view' %}">Cart</a>
-            <a href="{% url 'profile' %}">Profile</a>
-
-            <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Logout</button>
-            </form>
             {% if user.is_authenticated %}
                 <a href="{% url 'home' %}" class="nav-item">Home</a>
-                <a href="{% url 'cart_view' %}" class="nav-item">Cart 🛒</a>
-                
-                <a href="{% url 'profile' %}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <a href="{% url 'chat_list' %}" class="nav-item">Chats</a>
+                <a href="{% url 'cart_view' %}" class="nav-item">Cart</a>
+                <a href="{% url 'profile' %}" class="nav-item">Profile</a>
+
+                <a href="{% url 'profile' %}" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
                     {% if user.userprofile.avatar %}
                         <img src="{% static user.userprofile.avatar %}" class="nav-avatar">
                     {% else %}
                         <div class="nav-avatar" style="background:#FFC83D;"></div>
                     {% endif %}
                 </a>
-                
+
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="nav-item" style="background:none; border:none; cursor:pointer;">Logout</button>

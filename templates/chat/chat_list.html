@@ -1,11 +1,149 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-<h2>💬 Your Chats</h2>
-{% for room in rooms %}
-    <a href="{% url 'chat_room' room.id %}">
-        Chat with {{ room.user1.username }} {{ room.user2.username }}
-    </a><br>
-{% empty %}
-    No chats yet.
-{% endfor %}
+
+<style>
+    body {
+        background: linear-gradient(180deg, #F9FBFD 0%, #F3F6F9 100%);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .chat-page {
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 18px;
+    }
+
+    .chat-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2F3A4A;
+        margin-bottom: 18px;
+        letter-spacing: -0.5px;
+    }
+
+    .chat-search {
+        width: 100%;
+        padding: 14px 20px;
+        border-radius: 30px;
+        border: none;
+        background: #FFFFFF;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        margin-bottom: 28px;
+        font-size: 0.95rem;
+        outline: none;
+    }
+
+    .chat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #FFFFFF;
+        padding: 16px 18px;
+        border-radius: 22px;
+        margin-bottom: 14px;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .chat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+    }
+
+    .chat-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FFD6E0, #D6E4FF);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #2F3A4A;
+        font-size: 1rem;
+    }
+
+    .chat-name {
+        font-weight: 600;
+        color: #2F3A4A;
+        font-size: 0.98rem;
+        margin-bottom: 2px;
+    }
+
+    .chat-preview {
+        font-size: 0.85rem;
+        color: #8A94A6;
+    }
+</style>
+
+<div class="chat-page">
+    <div class="chat-title">Chats</div>
+
+    <input type="text" class="chat-search" placeholder="Search conversations...">
+
+    {% for room in rooms %}
+
+        {% if room.user1 == request.user %}
+            {% with room.user2 as other %}
+                <div class="chat-card" style="justify-content:space-between;">
+                    <a href="{% url 'chat_room' room.id %}" style="display:flex;align-items:center;gap:16px;flex:1;text-decoration:none;color:inherit;">
+                        <div class="chat-avatar">
+                            {{ other.username|slice:":2"|upper }}
+                        </div>
+                        <div style="flex:1;">
+                            <div class="chat-name" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>{{ other.username }}</span>
+
+                                {% if room.unread_count > 0 %}
+                                    <span style="background:#ff4d4d;color:white;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">
+                                        {{ room.unread_count }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="chat-preview">Tap to open chat</div>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'delete_chat' room.id %}"
+                       style="color:#d9534f; font-size:12px; text-decoration:none; margin-left:10px;"
+                       onclick="return confirm('Delete this chat?')">
+                       Delete
+                    </a>
+                </div>
+            {% endwith %}
+        {% else %}
+            {% with room.user1 as other %}
+                <div class="chat-card" style="justify-content:space-between;">
+                    <a href="{% url 'chat_room' room.id %}" style="display:flex;align-items:center;gap:16px;flex:1;text-decoration:none;color:inherit;">
+                        <div class="chat-avatar">
+                            {{ other.username|slice:":2"|upper }}
+                        </div>
+                        <div style="flex:1;">
+                            <div class="chat-name" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>{{ other.username }}</span>
+
+                                {% if room.unread_count > 0 %}
+                                    <span style="background:#ff4d4d;color:white;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">
+                                        {{ room.unread_count }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="chat-preview">Tap to open chat</div>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'delete_chat' room.id %}"
+                       style="color:#d9534f; font-size:12px; text-decoration:none; margin-left:10px;"
+                       onclick="return confirm('Delete this chat?')">
+                       Delete
+                    </a>
+                </div>
+            {% endwith %}
+        {% endif %}
+    {% empty %}
+        <p style="color:#888;">No conversations yet.</p>
+    {% endfor %}
+</div>
+
 {% endblock %}

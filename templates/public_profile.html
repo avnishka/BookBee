@@ -69,6 +69,14 @@
             <div class="trust-badge">
                 Trust Score: {{ total_score }} 🛡️
             </div>
+            {% if request.user != profile_user %}
+            <div style="margin-top: 15px;">
+                <a href="{% url 'start_chat' profile_user.username %}" 
+                   style="display: inline-block; background: #2E7D32; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    💬 Chat with {{ profile_user.first_name|default:profile_user.username }}
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 
