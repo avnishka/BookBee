@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>💬 Your Chats</h2>
+{% for room in rooms %}
+    <a href="{% url 'chat_room' room.id %}">
+        Chat with {{ room.user1.username }} {{ room.user2.username }}
+    </a><br>
+{% empty %}
+    No chats yet.
+{% endfor %}
+{% endblock %}
