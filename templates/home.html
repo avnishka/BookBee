@@ -1,206 +1,223 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Home | BookBee{% endblock %}
 
 {% block content %}
 <style>
-    /* --- LAYOUT CONTAINER --- */
-    .main-container {
-        max-width: 1300px;
-        margin: 0 auto;
-        padding: 40px 20px;
-    }
-
-    /* --- SECTION HEADER --- */
-    .catalog-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .catalog-title {
-        font-size: 1.5rem;
-        color: #333;
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .result-count {
-        color: #666;
-        font-size: 0.95rem;
-    }
-
-    /* --- PRODUCT GRID (AMAZON STYLE) --- */
-    .book-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Responsive Cards */
-        gap: 25px;
-    }
-
-    /* --- PRODUCT CARD --- */
-    .product-card {
+    /* --- HERO SEARCH SECTION --- */
+    .hero-section {
         background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        overflow: hidden;
-        transition: transform 0.2s, box-shadow 0.2s;
-        text-decoration: none; /* Removes link underline */
-        color: inherit;
-        display: flex;
-        flex-direction: column;
+        padding: 50px 20px;
+        text-align: center;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        margin-bottom: 40px;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+        color: #4A2C1A;
+        margin: 0 0 10px 0;
+    }
+
+    .hero-subtitle {
+        color: #888;
+        margin-bottom: 30px;
+        font-size: 1rem;
+    }
+
+    .search-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
         position: relative;
     }
 
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    .search-input {
+        width: 100%;
+        padding: 18px 25px;
+        padding-right: 60px; /* Space for button */
+        border-radius: 50px;
+        border: 2px solid #F0F0F0;
+        font-size: 1rem;
+        outline: none;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+    .search-input:focus {
+        border-color: #FFC83D;
+        box-shadow: 0 8px 25px rgba(255, 200, 61, 0.2);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #FFC83D;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: 0.2s;
+    }
+    .search-btn:hover { background: #ffb700; transform: translateY(-50%) scale(1.05); }
+
+
+    /* --- BOOK GRID CONTAINER --- */
+    .feed-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 25px;
+    }
+
+    /* --- PRODUCT CARD (Clean Style) --- */
+    .book-card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 16px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         border-color: #FFC83D;
     }
 
     /* Image Area */
-    .image-container {
-        height: 280px;
-        background: #f8f8f8;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        border-bottom: 1px solid #f0f0f0;
+    .image-box {
+        height: 320px;
+        background: #f9f9f9;
         position: relative;
+        overflow: hidden;
     }
 
-    .product-img {
+    .book-img {
         width: 100%;
         height: 100%;
-        object-fit: contain; /* Keeps aspect ratio like Amazon */
-        padding: 10px;
+        object-fit: cover;
     }
 
-    /* Badges */
+    /* Badge */
     .badge {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        padding: 4px 10px;
-        border-radius: 4px;
+        top: 12px;
+        left: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
         font-size: 0.75rem;
-        font-weight: bold;
+        font-weight: 800;
         text-transform: uppercase;
-        color: white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
-    .badge-rent { background: #FF9900; } /* Amazon Orange */
-    .badge-sale { background: #2E7D32; } /* Green */
+    .badge-rent { background: #FFC83D; color: #4A2C1A; }
+    .badge-sale { background: #2E7D32; color: white; }
 
-    /* Card Details */
-    .card-content {
-        padding: 15px;
-        flex: 1;
+    /* Content */
+    .card-details {
+        padding: 18px;
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
     }
 
-    .book-title {
-        font-size: 1rem;
-        font-weight: 600;
+    .b-title {
+        font-size: 1.1rem;
+        font-weight: 700;
         color: #333;
         margin: 0 0 5px 0;
-        line-height: 1.4;
-        
-        /* Cut off text after 2 lines */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    .book-location {
+    .b-loc {
         font-size: 0.85rem;
-        color: #767676;
-        margin-bottom: 10px;
-    }
-
-    .price-row {
-        margin-top: auto; /* Pushes price to bottom */
+        color: #888;
+        margin-bottom: 15px;
         display: flex;
-        align-items: baseline;
+        align-items: center;
         gap: 5px;
     }
 
-    .currency {
-        font-size: 0.9rem;
-        color: #333;
+    .b-price {
+        margin-top: auto;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #2E7D32;
     }
-
-    .price {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #B12704; /* Amazon Price Red */
-    }
-
-    .price-sub {
+    .per-day {
         font-size: 0.8rem;
-        color: #555;
+        color: #999;
+        font-weight: normal;
     }
+
 </style>
 
-<div class="main-container">
-
-    <div class="catalog-header">
-        <h2 class="catalog-title">
-            {% if request.GET.q or request.GET.price or request.GET.location or request.GET.genre %}
-                Search Results
-            {% else %}
-                Fresh Recommendations
-            {% endif %}
-        </h2>
-        <span class="result-count">{{ books.count }} books available</span>
-    </div>
-
-    <div class="book-grid">
-        {% for book in books %}
-        <a href="{% url 'book_detail' book.pk %}" class="product-card">
-            
-            <div class="image-container">
-                {% if book.transaction_type == 'rent' %}
-                    <span class="badge badge-rent">For Rent</span>
-                {% else %}
-                    <span class="badge badge-sale">For Sale</span>
-                {% endif %}
-
-                {% if book.image %}
-                    <img src="{{ book.image.url }}" alt="{{ book.title }}" class="product-img">
-                {% else %}
-                    <span style="font-size: 3rem;">📖</span>
-                {% endif %}
-            </div>
-
-            <div class="card-content">
-                <h3 class="book-title">{{ book.title }}</h3>
-                <div class="book-location">📍 {{ book.location|default:"Online" }}</div>
-                
-                <div class="price-row">
-                    <span class="currency">₹</span>
-                    <span class="price">{{ book.price|floatformat:0 }}</span>
-                    {% if book.transaction_type == 'rent' %}
-                        <span class="price-sub">/ day</span>
-                    {% endif %}
-                </div>
-            </div>
-        </a>
-        {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #888;">
-            <div style="font-size: 4rem; margin-bottom: 15px;">🔍</div>
-            <h3>No books found.</h3>
-            <p>Try clearing your filters or search for something else.</p>
-            <a href="{% url 'home' %}" style="color: #007185; text-decoration: underline; font-weight: bold;">See all books</a>
-        </div>
-        {% endfor %}
-    </div>
-
+<div class="hero-section">
+    <h1 class="hero-title">Find Your Next Read 📖</h1>
+    <p class="hero-subtitle">Borrow from neighbors or buy pre-loved books.</p>
+    
+    <form method="GET" class="search-wrapper">
+        <input type="text" name="q" class="search-input" placeholder="Search by title, genre, or location..." value="{{ request.GET.q|default:'' }}">
+        <button type="submit" class="search-btn">🔍</button>
+    </form>
 </div>
+
+<div class="feed-container">
+    {% for book in books %}
+    <a href="{% url 'book_detail' book.pk %}" class="book-card">
+        
+        <div class="image-box">
+            {% if book.transaction_type == 'rent' %}
+                <span class="badge badge-rent">FOR RENT</span>
+            {% else %}
+                <span class="badge badge-sale">FOR SALE</span>
+            {% endif %}
+
+            {% if book.image %}
+                <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img">
+            {% else %}
+                <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#ccc;">No Image</div>
+            {% endif %}
+        </div>
+
+        <div class="card-details">
+            <h3 class="b-title">{{ book.title }}</h3>
+            <div class="b-loc">📍 {{ book.location|truncatechars:25 }}</div>
+            
+            <div class="b-price">
+                ₹{{ book.price|floatformat:0 }}
+                {% if book.transaction_type == 'rent' %}
+                    <span class="per-day">/ day</span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+        <div style="font-size: 3rem; margin-bottom: 10px; color: #ddd;">🔍</div>
+        <h3 style="color: #666;">No books found.</h3>
+        <a href="{% url 'home' %}" style="color: #FFC83D; font-weight: bold; text-decoration: none;">Clear Search</a>
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}
