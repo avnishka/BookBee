@@ -51,40 +51,47 @@ def home(request):
 
     return render(request, 'home.html', {'books': books})
 
-
 # --- AUTH VIEWS ---
 def signup_view(request):
     BOOK_COVERS = [f"books/book{i}.jpg" for i in range(1, 29)]
 
     if request.method == "POST":
+        # ... (keep your existing username/email/password fetching code) ...
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
-        # Validations
+        # ... (keep your existing validations) ...
         if not username or not password:
             messages.error(request, "Username and Password are required.")
             return render(request, "signup.html", {"book_covers": BOOK_COVERS})
-            
+
         if password != confirm_password:
             messages.error(request, "Passwords do not match")
             return render(request, "signup.html", {"book_covers": BOOK_COVERS})
-            
+
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
             return render(request, "signup.html", {"book_covers": BOOK_COVERS})
-            
+
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
             return render(request, "signup.html", {"book_covers": BOOK_COVERS})
 
-        # Create User
+        # --- CODE CHANGE STARTS HERE ---
+        
+        # 1. Create the User
         user = User.objects.create_user(username=username, email=email, password=password)
         user.is_active = False 
         user.save()
 
-        # Send Email
+        # 2. ✅ FIX: Create the UserProfile immediately
+        UserProfile.objects.create(user=user)
+
+        # -------------------------------
+
+        # Send Email (Keep your existing email code)
         domain = request.get_host()
         mail_subject = 'Activate your BookBee account 🐝'
         message = render_to_string('acc_active_email.html', {
@@ -94,11 +101,14 @@ def signup_view(request):
             'token': default_token_generator.make_token(user),
         })
         
-        email = EmailMessage(mail_subject, message, to=[email])
-        email.send()
+        try:
+            email_msg = EmailMessage(mail_subject, message, to=[email])
+            email_msg.send()
+            messages.success(request, "Please check your email to verify your account! 📧")
+        except Exception as e:
+            messages.error(request, f"Error sending email: {e}")
 
-        messages.success(request, "Please check your email to verify your account! 📧")
-        return redirect("login") 
+        return redirect("login_view") # Ensure this matches your URL name
         
     return render(request, "signup.html", {"book_covers": BOOK_COVERS})
 
@@ -417,7 +427,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, 'Your account is activated! You can now log in. 🐝')
-        return redirect('login')
+        return redirect('login_view')
     else:
         messages.error(request, 'Activation link is invalid or expired!')
-        return redirect('signup')
+        return redirect('signup_view')
