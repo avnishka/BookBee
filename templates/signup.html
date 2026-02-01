@@ -1,61 +1,48 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Sign Up | BookBee{% endblock %}
 
 {% block content %}
 <style>
-    .signup-container {
-        max-width: 450px;
-        margin: 80px auto;
-        padding: 30px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .signup-container h2 {
-        text-align: center;
-        color: #3b6f4e;
-    }
-
-    .signup-container input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-    }
-
-    .signup-container button {
-        width: 100%;
-        padding: 12px;
-        background: #3b6f4e;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    .signup-container button:hover {
-        background: #2e5a3f;
-    }
+    footer { display: none !important; }
 </style>
 
-<div class="signup-container">
-    <h2>Join BookBee 🐝</h2>
-    <p style="text-align:center; color:#555;">
-        A community-driven book sharing hub
-    </p>
+<div class="auth-bg">
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="email" name="email" placeholder="Email address" required>
-        <input type="password" name="password1" placeholder="Password" required>
-        <input type="password" name="password2" placeholder="Confirm Password" required>
+    <!-- 📚 BOOK BACKGROUND -->
+    <div class="book-grid">
+        {% for book in book_covers %}
+            <img src="{% static book %}" alt="Book cover">
+        {% endfor %}
+    </div>
 
-        <button type="submit">Create Account</button>
-    </form>
+    <!-- 💳 SIGNUP CARD -->
+    <div class="auth-card">
+
+        <img src="{% static 'logo/logo.png' %}" class="auth-logo">
+
+        <h2>Buzzzzz In </h2>
+        <p>Where books are shared, not shelved forever.</p>
+
+        <form method="post" class="signup-form">
+            {% csrf_token %}
+
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
+
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <span>
+            Already have an account?
+            <a href="{% url 'login' %}">Login</a>
+        </span>
+
+    </div>
+
 </div>
 {% endblock %}

@@ -1,21 +1,4 @@
-/* =========================================
-   1. BEE THEME VARIABLES
-   ========================================= */
-:root {
-    --honey-yellow: #FFC107;
-    /* Bright Bee Yellow */
-    --honey-gold: #F59E0B;
-    /* Darker Gold */
-    --forest-green: #2E7D32;
-    /* Nature Green */
-    --cream-bg: #FFF8E1;
-    /* Soft Cream Background */
-    --white: #FFFFFF;
-    --dark-text: #374151;
-    --font-main: 'Poppins', sans-serif;
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
+/* RESET */
 * {
     margin: 0;
     padding: 0;
@@ -23,193 +6,140 @@
 }
 
 body {
-    font-family: var(--font-main);
-    background-color: var(--cream-bg);
-    color: var(--dark-text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* =========================================
-   2. NAVBAR
-   ========================================= */
-.navbar {
-    background-color: var(--white);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border-bottom: 3px solid var(--honey-yellow);
-}
-
-.logo {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--forest-green);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.search-bar-container {
-    display: flex;
-    gap: 10px;
-    background: var(--cream-bg);
-    padding: 5px;
-    border-radius: 50px;
-    border: 1px solid #E5E7EB;
-}
-
-.search-bar-container input,
-.search-bar-container select {
-    border: none;
-    background: transparent;
-    padding: 8px 15px;
-    outline: none;
-    font-size: 0.95rem;
-}
-
-.search-btn {
-    background-color: var(--forest-green);
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.search-btn:hover {
-    background-color: #1B5E20;
-}
-
-.nav-links a {
-    color: var(--dark-text);
-    text-decoration: none;
-    font-weight: 600;
-    margin-left: 20px;
-    transition: color 0.3s;
-}
-
-.nav-links a:hover {
-    color: var(--honey-gold);
-}
-
-.logout-btn {
-    background: transparent;
-    border: 2px solid var(--honey-gold);
-    color: var(--honey-gold);
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-left: 15px;
-}
-
-.logout-btn:hover {
-    background: var(--honey-gold);
-    color: white;
-}
-
-/* =========================================
-   3. HERO & CARDS
-   ========================================= */
-.banner {
-    background-color: var(--honey-yellow);
-    color: #4A3b00;
-    text-align: center;
-    padding: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-h2 {
-    text-align: center;
-    margin: 40px 0 10px;
-    color: var(--forest-green);
-}
-
-.book-feed {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
-    padding: 20px 50px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.book-card {
-    background: var(--white);
-    border-radius: 16px;
+    font-family: 'Poppins', sans-serif;
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease;
-    border: 1px solid #F3F4F6;
 }
 
-.book-card:hover {
-    transform: translateY(-5px);
+/* PAGE */
+.auth-bg {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
 }
 
-.book-card img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-bottom: 3px solid var(--honey-yellow);
-}
+/* 📚 BOOK GRID — EXACT 3 ROWS */
+.book-grid {
+    position: absolute;
+    inset: 0;
 
-.book-card .info {
-    padding: 15px;
-}
+    display: grid;
+    grid-template-rows: repeat(3, 225px);
+    grid-auto-columns: 150px;
+    grid-auto-flow: column;
 
-.book-card h4 {
-    font-size: 1.1rem;
-    color: var(--dark-text);
-    margin-bottom: 5px;
-}
-
-.price {
-    color: var(--forest-green);
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-/* =========================================
-   4. LOGIN PAGE
-   ========================================= */
-.login-container {
-    height: 80vh;
-    display: flex;
+    gap: 24px;
     justify-content: center;
-    align-items: center;
+    align-content: center;
+
+    overflow: hidden;
+    z-index: 1;
 }
 
-.login-card {
-    background: var(--white);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    width: 100%;
-    max-width: 400px;
+/* BOOK IMAGES */
+.book-grid img {
+    width: 150px;
+    height: 225px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+}
+
+/* 💳 AUTH CARD (LOGIN + SIGNUP) */
+.auth-card {
+    position: absolute;
+    z-index: 3;
+
+    width: 420px;
+    padding: 36px 32px;
+
+    background: rgba(255, 243, 204, 0.55);
+    backdrop-filter: blur(18px);
+
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.4);
+
+    box-shadow:
+        0 40px 90px rgba(0,0,0,0.45),
+        inset 0 0 0 1px rgba(255,255,255,0.3);
+
     text-align: center;
-    border-top: 5px solid var(--honey-yellow);
+
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.btn-primary {
+/* LOGO */
+.auth-logo {
+    width: 110px;
+    margin-bottom: 14px;
+}
+
+/* TEXT */
+.auth-card h2 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.auth-card p {
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+/* INPUTS */
+.auth-card input {
     width: 100%;
-    padding: 12px;
-    background-color: var(--honey-yellow);
-    color: #4A3b00;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
+    padding: 13px;
+    margin: 10px 0;
+
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.6);
+
+    outline: none;
 }
 
-.btn-primary:hover {
-    background-color: var(--honey-gold);
+/* BUTTON */
+.auth-card button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 16px;
+
+    background: #2E7D32;
+    color: white;
+
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* FOOTER TEXT */
+.auth-card span {
+    display: block;
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.auth-card a {
+    color: #2E7D32;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* 🔹 SIGNUP FORM GRID (PREVENT ELONGATION) */
+.signup-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+/* Inputs spacing reset inside grid */
+.signup-form input {
+    margin: 0;
+}
+
+/* Full width button */
+.signup-form button {
+    grid-column: span 2;
 }

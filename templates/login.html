@@ -1,31 +1,44 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | BookBee</title>
 
-{% block content %}
-<div class="login-container">
-    <div class="login-card">
-        <h2>Welcome 🐝</h2>
-        <p>Login to continue sharing knowledge.</p>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
 
-        {% if messages %}
-        {% for message in messages %}
-        <p style="color: red; margin-bottom: 1rem;">{{ message }}</p>
+<div class="auth-bg">
+
+    <!-- 📚 BOOK BACKGROUND -->
+    <div class="book-grid">
+        {% for book in book_covers %}
+            <img src="{% static book %}" alt="Book cover">
         {% endfor %}
-        {% endif %}
+    </div>
+
+    <!-- 💳 LOGIN CARD -->
+    <div class="auth-card">
+        <img src="{% static 'logo/logo.png' %}" class="auth-logo">
+
+        <h2>Logged out too long?</h2>
+        <p>Your bookshelf missed you.</p>
 
         <form method="POST">
             {% csrf_token %}
-            <div class="input-group">
-                <input type="text" name="username" placeholder="Username" required>
-            </div>
-            <div class="input-group">
-                <input type="password" name="password" placeholder="Password" required>
-            </div>
-            <button type="submit" class="btn-primary">Login</button>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
         </form>
 
-        <div class="auth-footer">
+        <span>
             New here? <a href="{% url 'signup' %}">Create an account</a>
-        </div>
+        </span>
     </div>
+
 </div>
-{% endblock %}
+
+</body>
+</html>
