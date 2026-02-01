@@ -32,47 +32,50 @@
         align-items: center;
         gap: 35px;
         margin-bottom: 40px;
+        position: relative; 
     }
 
+    /* --- FIXED AVATAR CONTAINER --- */
     .profile-pic-container {
         width: 130px;
         height: 130px;
         border-radius: 50%;
         border: 4px solid #FFC83D;
-        overflow: hidden;
         margin: 0 auto;
-        position: relative;
+        position: relative; 
+        overflow: visible;
     }
 
-    .choose-btn {
-        display: block;
-        margin-top: 12px;
-        font-size: 0.9rem;
-        color: #666;
-        cursor: pointer;
-        font-weight: 600;
-        text-align: center;
-    }
-    .choose-btn:hover { color: #2E7D32; }
-
-    /* Avatar Picker */
+    /* --- AVATAR PICKER POPUP --- */
     .avatar-grid {
-        display: none;
+        display: none; 
         position: absolute;
-        top: 110%;
-        left: 0;
+        top: 150px; 
+        left: 50%;
+        transform: translateX(-50%);
         background: white;
         border: 1px solid #eee;
         padding: 15px;
         border-radius: 16px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        z-index: 100;
-        width: 220px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 9999;
+        width: 230px;
         flex-wrap: wrap;
         gap: 10px;
         justify-content: center;
     }
-    
+
+    .avatar-grid::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 0 10px 10px 10px;
+        border-style: solid;
+        border-color: transparent transparent white transparent;
+    }
+
     .avatar-option {
         width: 45px;
         height: 45px;
@@ -83,7 +86,21 @@
     }
     .avatar-option:hover { transform: scale(1.1); border-color: #FFC83D; }
 
-    /* User Details */
+    /* --- TEXT STYLES --- */
+    .choose-btn {
+        display: block;
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #666;
+        cursor: pointer;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        background: none;
+        border: none;
+    }
+    .choose-btn:hover { color: #2E7D32; text-decoration: underline; }
+
     .profile-details h2 { margin: 0 0 8px 0; color: #4A2C1A; font-size: 2rem; letter-spacing: -0.5px; }
     .profile-details p { margin: 5px 0; color: #777; font-size: 0.95rem; }
 
@@ -102,86 +119,21 @@
     }
     .edit-btn:hover { background: #FFC83D; color: white; }
 
-    /* --- SWIGGY STYLE TABS (CENTERED) --- */
-    .history-section {
-        margin-top: 50px;
-    }
+    /* --- TABS --- */
+    .history-section { margin-top: 50px; }
+    .tabs-header { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+    .tab-btn { padding: 12px 30px; border-radius: 30px; border: none; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; background: #F0F2F5; color: #666; }
+    .tab-btn.active { background: #2E3A46; color: white; box-shadow: 0 4px 12px rgba(46, 58, 70, 0.3); transform: scale(1.05); }
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active-content { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .tabs-header {
-        display: flex;
-        justify-content: center; 
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-
-    .tab-btn {
-        padding: 12px 30px;
-        border-radius: 30px;
-        border: none;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #F0F2F5;
-        color: #666;
-        position: relative;
-    }
-
-    /* Active State */
-    .tab-btn.active {
-        background: #2E3A46; 
-        color: white;
-        box-shadow: 0 4px 12px rgba(46, 58, 70, 0.3);
-        transform: scale(1.05);
-    }
-    
-    .tab-btn:hover:not(.active) {
-        background: #E0E0E0;
-    }
-
-    /* --- LIST ITEMS --- */
-    .tab-content {
-        display: none; 
-        animation: fadeIn 0.4s ease;
-    }
-    
-    .tab-content.active-content {
-        display: block;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .history-card {
-        background: white;
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 15px;
-        border: 1px solid #f0f0f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: 0.2s;
-    }
-    
-    .history-card:hover {
-        border-color: #FFC83D;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .status-pill {
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 10px;
-        text-transform: uppercase;
-    }
+    .history-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+    .history-card:hover { border-color: #FFC83D; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .status-pill { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 10px; text-transform: uppercase; }
     .st-available { background: #E8F5E9; color: #2E7D32; }
     .st-lended { background: #FFF3E0; color: #F57C00; }
     .st-sold { background: #FFEBEE; color: #C62828; }
-
 </style>
 
 <div class="profile-wrapper">
@@ -192,106 +144,124 @@
         <div style="flex-shrink: 0; text-align: center;">
             <div class="profile-pic-container">
                 {% if user_profile.avatar %}
-                    <img src="{% static user_profile.avatar %}" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="{% static user_profile.avatar %}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                 {% else %}
-                    <div style="width:100%; height:100%; background:#FFC83D; display:flex; align-items:center; justify-content:center; font-size:3rem;">🐝</div>
+                    <div style="width:100%; height:100%; background:#FFC83D; display:flex; align-items:center; justify-content:center; font-size:3rem; border-radius:50%;">🐝</div>
                 {% endif %}
+                
+                <div id="avatarPicker" class="avatar-grid">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% for avatar_name in available_avatars %}
+                        <button type="submit" name="selected_avatar" value="{{ avatar_name }}" style="border:none; background:none; padding:0; cursor:pointer;">
+                            <img src="{% static 'images/'|add:avatar_name %}" class="avatar-option">
+                        </button>
+                        {% endfor %}
+                    </form>
+                </div>
             </div>
-            <span class="choose-btn" onclick="togglePicker()">Edit Avatar ✎</span>
-            
-            <div id="avatarPicker" class="avatar-grid">
-                <form method="POST">
-                    {% csrf_token %}
-                    {% for avatar_name in available_avatars %}
-                    <button type="submit" name="selected_avatar" value="{{ avatar_name }}" style="border:none; background:none; padding:0;">
-                        <img src="{% static 'images/'|add:avatar_name %}" class="avatar-option">
-                    </button>
-                    {% endfor %}
-                </form>
-            </div>
+            <button class="choose-btn" onclick="togglePicker()">Edit Avatar ✎</button>
         </div>
 
         <div class="profile-details">
             <h2>{{ user.first_name }} {{ user.last_name }}</h2>
             <p>@{{ user.username }} • 📧 {{ user.email }}</p>
-            
-            <div style="margin-top: 15px; display: flex; gap: 15px;">
-                <div style="background: #E8F5E9; color: #2E7D32; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
+            <div style="margin-top: 15px;">
+                <span style="background: #E8F5E9; color: #2E7D32; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
                     🛡️ Trust Score: {{ total_score }}
-                </div>
+                </span>
             </div>
-
             <a href="{% url 'edit_profile' %}" class="edit-btn">Edit Profile</a>
         </div>
     </div>
 
     <div class="history-section">
-        <h3 style="margin-bottom: 20px; color: #4A2C1A; text-align: center;">Book History</h3>
         
         <div class="tabs-header">
-            <button class="tab-btn active" onclick="openTab(event, 'lent')">Lent / Selling</button>
+            <button class="tab-btn active" onclick="openTab(event, 'listings')">Lending</button>
             <button class="tab-btn" onclick="openTab(event, 'borrowed')">Borrowed</button>
+            <button class="tab-btn" onclick="openTab(event, 'history')">History</button>
         </div>
 
-        <div id="lent" class="tab-content active-content">
-            {% if lent_books %}
-                {% for book in lent_books %}
+        <div id="listings" class="tab-content active-content">
+            {% if my_listings %}
+                {% for book in my_listings %}
                 <div class="history-card">
                     <div>
                         <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #333;">{{ book.title }}</h4>
-                        <span class="status-pill {% if book.status == 'AVAILABLE' %}st-available{% elif book.status == 'LENDED' %}st-lended{% else %}st-sold{% endif %}">
-                            {{ book.status }}
+                        <span class="status-pill {% if book.status == 'AVAILABLE' %}st-available{% else %}st-lended{% endif %}">
+                            {% if book.status == 'LENDED' %}Lent Out{% else %}{{ book.status }}{% endif %}
                         </span>
                     </div>
                     <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
                         <div style="font-weight: 800; color: #4A2C1A; font-size: 1.1rem;">₹{{ book.price }}</div>
                         
                         {% if book.status == 'AVAILABLE' %}
-                            <form action="{% url 'delete_book' book.pk %}" method="POST" onsubmit="return confirm('Are you sure you want to remove this book?');">
+                            <form action="{% url 'delete_book' book.pk %}" method="POST" onsubmit="return confirm('Are you sure you want to stop lending this book?');">
                                 {% csrf_token %}
                                 <button type="submit" style="background: #FFEBEE; color: #C62828; border: none; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: 0.2s;">
                                     🗑️ Delete
                                 </button>
                             </form>
                         {% else %}
-                            <div style="font-size: 0.8rem; color: #999;">{{ book.created_at|date:"M d, Y" }}</div>
+                            <div style="font-size: 0.8rem; color: #999;">Currently Lent</div>
                         {% endif %}
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div style="text-align: center; padding: 50px; background: #F9F9F9; border-radius: 16px;">
-                    <p style="color: #888;">You haven't listed any books yet.</p>
-                    <a href="{% url 'add_book' %}" style="color: #2E7D32; font-weight: bold;">+ List a Book</a>
+                    <p style="color: #888;">You are not lending any books.</p>
+                    <a href="{% url 'add_book' %}" style="color: #2E7D32; font-weight: bold;">+ Lend a Book</a>
                 </div>
             {% endif %}
         </div>
 
         <div id="borrowed" class="tab-content">
-            {% if borrowed_orders %}
-                {% for order in borrowed_orders %}
-                <div class="history-card" style="border-left: 5px solid #2E7D32;">
+            {% if borrowed_books %}
+                {% for order in borrowed_books %}
+                <div class="history-card" style="border-left: 5px solid #FFC83D;">
                     <div>
                         <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #333;">{{ order.book.title }}</h4>
                         <p style="margin: 0; font-size: 0.9rem; color: #666;">
-                            Seller: <a href="{% url 'public_profile' order.seller.username %}" style="color: #2E7D32; font-weight: bold;">@{{ order.seller.username }}</a>
+                            Borrowed from: <a href="{% url 'public_profile' order.seller.username %}" style="color: #2E7D32; font-weight: bold;">@{{ order.seller.username }}</a>
                         </p>
                     </div>
                     <div style="text-align: right;">
-                        <a href="{% url 'public_profile' order.seller.username %}" style="background: #2E7D32; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; font-weight: bold;">Rate Seller 🛡️</a>
+                        <a href="{% url 'public_profile' order.seller.username %}" style="background: #2E7D32; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; font-weight: bold;">Rate Owner 🛡️</a>
                         <div style="font-size: 0.8rem; color: #999; margin-top: 8px;">{{ order.created_at|date:"M d, Y" }}</div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div style="text-align: center; padding: 50px; background: #F9F9F9; border-radius: 16px;">
-                    <p style="color: #888;">You haven't borrowed any books yet.</p>
+                    <p style="color: #888;">You haven't borrowed any books.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="history" class="tab-content">
+            {% if purchased_books %}
+                {% for order in purchased_books %}
+                <div class="history-card" style="border-left: 5px solid #2E7D32;">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #333;">{{ order.book.title }}</h4>
+                        <span class="status-pill st-sold">PURCHASED</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Seller: @{{ order.seller.username }}</div>
+                        <div style="font-size: 0.8rem; color: #999;">{{ order.created_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 50px; background: #F9F9F9; border-radius: 16px;">
+                    <p style="color: #888;">You haven't bought any books yet.</p>
                 </div>
             {% endif %}
         </div>
 
     </div>
-
 </div>
 
 <script>
@@ -306,12 +276,10 @@
             tabContent[i].style.display = "none";
             tabContent[i].classList.remove("active-content");
         }
-
         var tabLinks = document.getElementsByClassName("tab-btn");
         for (var i = 0; i < tabLinks.length; i++) {
             tabLinks[i].classList.remove("active");
         }
-
         document.getElementById(tabName).style.display = "block";
         document.getElementById(tabName).classList.add("active-content");
         evt.currentTarget.classList.add("active");

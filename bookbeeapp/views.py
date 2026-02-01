@@ -47,7 +47,7 @@ def home(request):
 # --- AUTH VIEWS ---
 def signup_view(request):
     if request.method == "POST":
-        # 1. Get data and STRIP whitespace (Fixes the "space" bug)
+        # 1. Get data and STRIP whitespace
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "")
@@ -70,15 +70,19 @@ def signup_view(request):
             messages.error(request, "Email already exists")
             return redirect("signup")
 
-        # 3. CRITICAL: Use 'create_user' (Hashes the password)
-        # Never use 'User.objects.create()' for users!
+        # 3. Create the user
         user = User.objects.create_user(username=username, email=email, password=password)
         
-        # 4. Login the user (Specify backend to prevent errors)
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        # --- CHANGES START HERE ---
         
-        messages.success(request, "Welcome to BookBee 🐝")
-        return redirect("home") 
+        # REMOVED: login(request, user, backend='...') 
+        # We do NOT log them in automatically anymore.
+        
+        # 4. Redirect to LOGIN page with a success message
+        messages.success(request, "Account created successfully! Please log in. 🐝")
+        return redirect("login") 
+        
+        # --- CHANGES END HERE ---
         
     return render(request, "signup.html")
 
@@ -167,6 +171,7 @@ def book_detail(request, pk):
 # --- CART & CHECKOUT ---
 @login_required(login_url='login')
 def add_to_cart(request, pk):
+
     book = get_object_or_404(Book, pk=pk)
     cart, created = Cart.objects.get_or_create(user=request.user)
     
@@ -175,6 +180,7 @@ def add_to_cart(request, pk):
     
     messages.success(request, f"Added {book.title} to your cart!")
     return redirect('cart_view')
+
 @login_required(login_url='login')
 def cart_view(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -255,6 +261,7 @@ def profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     available_avatars = ['av1.png', 'av2.png', 'av3.png', 'av4.png', 'av5.png']
 
+    # Handle Avatar Change
     if request.method == 'POST':
         if 'selected_avatar' in request.POST:
             avatar_filename = request.POST.get('selected_avatar')
@@ -265,13 +272,24 @@ def profile(request):
     user_credits = UserCredit.objects.filter(receiver=request.user).order_by('-created_at')
     total_score = sum(c.score for c in user_credits)
     
-    lent_books = Book.objects.filter(owner=request.user)
-    borrowed_orders = Order.objects.filter(buyer=request.user).order_by('-created_at')
+    # --- TAB 1: LENDING (My Listings) ---
+    # Books I own that are Available or currently Lent out.
+    # We EXCLUDE 'SOLD' because those are books I bought for myself.
+    my_listings = Book.objects.filter(owner=request.user).exclude(status='SOLD').order_by('-created_at')
+    
+    # --- TAB 2: BORROWED (Rentals) ---
+    # Orders where I am the buyer AND the book was for 'rent'
+    borrowed_books = Order.objects.filter(buyer=request.user, book__transaction_type='rent').order_by('-created_at')
+    
+    # --- TAB 3: HISTORY (Purchases) ---
+    # Orders where I am the buyer AND the book was for 'buy'
+    purchased_books = Order.objects.filter(buyer=request.user, book__transaction_type='buy').order_by('-created_at')
 
     context = {
         'user_profile': user_profile,
-        'lent_books': lent_books,
-        'borrowed_orders': borrowed_orders,
+        'my_listings': my_listings,       # Tab 1
+        'borrowed_books': borrowed_books, # Tab 2
+        'purchased_books': purchased_books, # Tab 3
         'available_avatars': available_avatars,
         'user_credits': user_credits,
         'total_score': total_score,
