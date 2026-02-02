@@ -149,7 +149,7 @@
 
         <div class="chat-avatar">
             {% if other_user.userprofile.avatar %}
-                <img src="{% static other_user.userprofile.avatar %}" alt="{{ other_user.username }}">
+                <img src="{% static 'images/'|add:other_user.userprofile.avatar %}" alt="{{ other_user.username }}">
             {% else %}
                 {{ other_user.username|first|upper }}
             {% endif %}

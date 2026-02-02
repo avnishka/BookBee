@@ -15,26 +15,18 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 
 # --- HOME VIEW ---
-@login_required(login_url='login_view')
 def home(request):
-    books = Book.objects.filter(status='AVAILABLE').order_by('-created_at')
+    books = Book.objects.all().order_by('-created_at')
+
     query = request.GET.get('q')
-    location = request.GET.get('location')
-    genre = request.GET.get('genre')
-    sort_option = request.GET.get('sort')
 
     if query:
+        # Filter by Title OR Genre OR Location (Case insensitive)
         books = books.filter(
             Q(title__icontains=query) | 
-            Q(pincode__icontains=query) | 
-            Q(location__icontains=query) |
-            Q(genre__icontains=query)
+            Q(genre__icontains=query) | 
+            Q(location__icontains=query)
         )
-
-    if location:
-        books = books.filter(location__icontains=location)
-    if genre:
-        books = books.filter(genre__iexact=genre)
 
     return render(request, 'home.html', {'books': books})
 

@@ -100,7 +100,7 @@
                         
                         <div class="chat-avatar">
                             {% if other.userprofile.avatar %}
-                                <img src="{% static other.userprofile.avatar %}" alt="{{ other.username }}">
+                                <img src="{% static 'images/'|add:other.userprofile.avatar %}" alt="{{ other.username }}">
                             {% else %}
                                 {{ other.username|slice:":2"|upper }}
                             {% endif %}
@@ -134,7 +134,7 @@
                         
                         <div class="chat-avatar">
                             {% if other.userprofile.avatar %}
-                                <img src="{% static other.userprofile.avatar %}" alt="{{ other.username }}">
+                               <img src="{% static 'images/'|add:other.userprofile.avatar %}" alt="{{ other.username }}">
                             {% else %}
                                 {{ other.username|slice:":2"|upper }}
                             {% endif %}

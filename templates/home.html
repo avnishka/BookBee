@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home | BookBee{% endblock %}
 
@@ -12,6 +13,7 @@
         border-radius: 0 0 30px 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         margin-bottom: 40px;
+        margin-top: -20px; 
     }
 
     .hero-title { font-size: 2.2rem; color: #4A2C1A; margin: 0 0 10px 0; }
@@ -40,11 +42,14 @@
         border-radius: 50%; cursor: pointer; display: flex; align-items: center;
         justify-content: center; font-size: 1.2rem; transition: 0.2s;
     }
+    .search-btn:hover { background: #e0b035; }
 
-    /* --- BOOK GRID CONTAINER --- */
+    /* --- FEED CONTAINER --- */
     .feed-container {
         max-width: 1300px; margin: 0 auto; padding: 0 20px;
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px;
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+        gap: 25px;
     }
 
     .book-card {
@@ -52,20 +57,33 @@
         overflow: hidden; text-decoration: none; color: inherit;
         transition: transform 0.2s, box-shadow 0.2s; position: relative;
         display: flex; flex-direction: column;
+        height: 100%;
     }
 
     .book-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: #FFC83D; }
 
-    .image-box { height: 320px; background: #f9f9f9; position: relative; overflow: hidden; }
+    /* Dim unavailable books */
+    .book-card.unavailable { opacity: 0.8; background: #fdfdfd; }
+
+    .image-box { 
+        height: 320px; width: 100%;
+        background: #f9f9f9; position: relative; overflow: hidden;
+        border-bottom: 1px solid #eee;
+    }
+    
     .book-img { width: 100%; height: 100%; object-fit: cover; }
 
+    /* --- BADGES --- */
     .badge {
         position: absolute; top: 12px; left: 12px; padding: 6px 14px;
         border-radius: 20px; font-size: 0.75rem; font-weight: 800;
         text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        z-index: 10;
     }
     .badge-rent { background: #FFC83D; color: #4A2C1A; }
     .badge-sale { background: #2E7D32; color: white; }
+    /* ✅ New Badge for Unavailable Items */
+    .badge-unavailable { background: #9E9E9E; color: white; }
     
     .owner-badge {
         display: inline-block; margin-top: 10px; padding: 5px 12px;
@@ -76,51 +94,69 @@
     .card-details { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
     .b-title { font-size: 1.1rem; font-weight: 700; color: #333; margin: 0 0 5px 0; }
     .b-loc { font-size: 0.85rem; color: #888; margin-bottom: 10px; }
-    .b-price { margin-top: auto; font-size: 1.3rem; font-weight: 800; color: #2E7D32; }
+    
+    .b-price { 
+        margin-top: auto; font-size: 1.3rem; font-weight: 800; color: #2E7D32; 
+    }
     .per-day { font-size: 0.8rem; color: #999; font-weight: normal; }
 
     .cart-btn {
         display: block; width: 100%; margin-top: 15px; padding: 10px;
         background: #2E7D32; color: white; text-align: center;
         border-radius: 8px; font-weight: bold; text-decoration: none; transition: 0.2s;
+        border: none; cursor: pointer;
     }
     .cart-btn:hover { background: #1B5E20; }
+    
+    /* Disabled Button Style */
+    .cart-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        color: #666;
+    }
 </style>
 
 <div class="hero-section">
-    <h1 class="hero-title">Find Your Next Read 📖</h1>
+    <h1 class="hero-title">Find Your Next Read &#x1F4DA;</h1>
     <p class="hero-subtitle">Borrow from neighbors or buy pre-loved books.</p>
     
     <form method="GET" class="search-wrapper">
         <input type="text" name="q" class="search-input" placeholder="Search by title, genre, or location..." value="{{ request.GET.q|default:'' }}">
-        <button type="submit" class="search-btn">🔍</button>
+        <button type="submit" class="search-btn">&#x1F50D;</button>
     </form>
 </div>
 
 <div class="feed-container">
     {% for book in books %}
-    <div class="book-card">
-        <a href="{% url 'book_detail' book.pk %}" style="text-decoration: none; color: inherit;">
+    <div class="book-card {% if book.status != 'AVAILABLE' %}unavailable{% endif %}">
+        
+        <a href="{% url 'book_detail' book.pk %}" style="text-decoration: none; color: inherit; display: contents;">
             <div class="image-box">
-                {% if book.transaction_type == 'rent' %}
-                    <span class="badge badge-rent">FOR RENT</span>
+                {% if book.status == 'AVAILABLE' %}
+                    {% if book.transaction_type == 'rent' %}
+                        <span class="badge badge-rent">FOR RENT</span>
+                    {% else %}
+                        <span class="badge badge-sale">FOR SALE</span>
+                    {% endif %}
                 {% else %}
-                    <span class="badge badge-sale">FOR SALE</span>
+                    <span class="badge badge-unavailable">
+                        {% if book.status == 'SOLD' %}SOLD{% else %}UNAVAILABLE{% endif %}
+                    </span>
                 {% endif %}
 
                 {% if book.image %}
                     <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img">
                 {% else %}
-                    <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#ccc;">No Image</div>
+                    <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#ccc; font-size: 3rem;">&#x1F4D6;</div>
                 {% endif %}
             </div>
 
             <div class="card-details">
                 <h3 class="b-title">{{ book.title }}</h3>
-                <div class="b-loc">📍 {{ book.location|truncatechars:25 }}</div>
+                <div class="b-loc">&#x1F4CD; {{ book.location|truncatechars:25 }}</div>
                 
                 <div class="b-price">
-                    ₹{{ book.price|floatformat:0 }}
+                    &#8377;{{ book.price|floatformat:0 }}
                     {% if book.transaction_type == 'rent' %}
                         <span class="per-day">/ 2 weeks</span>
                     {% endif %}
@@ -129,20 +165,25 @@
         </a>
 
         <div style="padding: 0 18px 18px 18px;">
-            {% if book.owner != request.user %}
-                <a href="{% url 'add_to_cart' book.pk %}" class="cart-btn">Add to Cart</a>
+            {% if book.status == 'AVAILABLE' %}
+                {% if book.owner != request.user %}
+                    <a href="{% url 'add_to_cart' book.pk %}" class="cart-btn">Add to Cart</a>
+                {% else %}
+                    <div class="owner-badge">Your Listing</div>
+                {% endif %}
             {% else %}
-                <div class="owner-badge">Your Listing</div>
+                <button class="cart-btn" disabled>
+                    {% if book.status == 'SOLD' %}Sold Out{% else %}Currently Rented{% endif %}
+                </button>
             {% endif %}
         </div>
     </div>
     {% empty %}
     <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
-        <div style="font-size: 3rem; margin-bottom: 10px; color: #ddd;">🔍</div>
+        <div style="font-size: 3rem; margin-bottom: 10px; color: #ddd;">&#x1F50D;</div>
         <h3 style="color: #666;">No books found.</h3>
         <a href="{% url 'home' %}" style="color: #FFC83D; font-weight: bold;">Clear Search</a>
     </div>
     {% endfor %}
 </div>
-
 {% endblock %}

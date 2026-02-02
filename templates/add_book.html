@@ -80,43 +80,80 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const transactionField = document.getElementById('id_transaction_type');
-            const securityField = document.getElementById('id_security_amount');
+    document.addEventListener('DOMContentLoaded', function () {
+        const transactionField = document.getElementById('id_transaction_type');
+        const securityField = document.getElementById('id_security_amount');
+        const detectBtn = document.querySelector('.detect-btn'); // Select the button
 
-            function toggleSecurity() {
-                if (transactionField && securityField) {
-                    if (transactionField.value === 'buy') {
-                        securityField.value = '0';
-                        securityField.disabled = true;
-                        securityField.style.backgroundColor = '#f3f3f3';
-                    } else {
-                        securityField.disabled = false;
-                        securityField.style.backgroundColor = 'white';
-                    }
+        function toggleSecurity() {
+            if (transactionField && securityField) {
+                if (transactionField.value === 'buy') {
+                    securityField.value = '0';
+                    securityField.disabled = true;
+                    securityField.style.backgroundColor = '#f3f3f3';
+                } else {
+                    securityField.disabled = false;
+                    securityField.style.backgroundColor = 'white';
                 }
             }
-            if (transactionField) {
-                toggleSecurity();
-                transactionField.addEventListener('change', toggleSecurity);
-            }
-            detectLocation();
-        });
-
-        function detectLocation() {
-            const locationField = document.getElementById('id_location');
-            if (!locationField) return;
-            if (!navigator.geolocation) { locationField.placeholder = "Not supported"; return; }
-            locationField.placeholder = "📍 Locating...";
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
-                    .then(r => r.json())
-                    .then(d => locationField.value = (d.address.city || d.address.town) + ", " + d.address.state);
-                },
-                () => locationField.placeholder = "Permission denied"
-            );
         }
-    </script>
+
+        if (transactionField) {
+            toggleSecurity();
+            transactionField.addEventListener('change', toggleSecurity);
+        }
+
+        // Attach event listener explicitly to avoid inline onclick issues
+        if(detectBtn) {
+            detectBtn.addEventListener('click', detectLocation);
+        }
+    });
+
+    function detectLocation() {
+        const locationField = document.getElementById('id_location');
+        if (!locationField) return;
+
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+
+        locationField.placeholder = "📍 Locating...";
+        
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                // SUCCESS: Coordinates found, now fetching address
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                
+                // Using BigDataCloud API (Free, no key, more reliable for simple city names than OSM sometimes)
+                fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
+                .then(response => response.json())
+                .then(data => {
+                    // Extract just the main city/locality
+                    const city = data.locality || data.city || data.principalSubdivision;
+                    locationField.value = city; 
+                })
+                .catch(err => {
+                    console.error("API Error:", err);
+                    locationField.placeholder = "Error fetching address";
+                    alert("Found coordinates, but could not get city name. Check internet connection.");
+                });
+            },
+            (err) => {
+                // ERROR: Browser blocked location or insecure connection
+                console.error("Geolocation Error:", err);
+                let msg = "Error.";
+                if (err.code === 1) msg = "Permission denied. Please allow location access.";
+                if (err.code === 2) msg = "Position unavailable. GPS signal lost.";
+                if (err.code === 3) msg = "Timeout.";
+                
+                locationField.placeholder = "Type manually";
+                alert(msg);
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        );
+    }
+</script>
 </body>
 </html>
