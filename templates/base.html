@@ -119,15 +119,35 @@
         <div class="nav-links">
             {% if user.is_authenticated %}
                 <a href="{% url 'home' %}" class="nav-item">Home</a>
-                <a href="{% url 'chat_list' %}" class="nav-item">Chats</a>
+                
+                <a href="{% url 'chat_list' %}" class="nav-item" style="position: relative;">
+                    Chats
+                    {% if total_unread_messages > 0 %}
+                    <span style="
+                        background-color: #ff4d4d;
+                        color: white;
+                        font-size: 0.7rem;
+                        font-weight: bold;
+                        padding: 2px 6px;
+                        border-radius: 50%;
+                        position: absolute;
+                        top: -8px;
+                        right: -12px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    ">
+                        {{ total_unread_messages }}
+                    </span>
+                    {% endif %}
+                </a>
+
                 <a href="{% url 'cart_view' %}" class="nav-item">Cart</a>
                 <a href="{% url 'profile' %}" class="nav-item">Profile</a>
 
                 <a href="{% url 'profile' %}">
                 {% if user.userprofile.avatar %}
-                <img src="{% static 'images/'|add:user.userprofile.avatar %}" style="width:40px; height:40px; border-radius:50%;">
+                <img src="{% static 'images/'|add:user.userprofile.avatar %}" style="width:40px; height:40px; border-radius:50%; object-fit: cover;">
                 {% else %}
-                <span>🐝</span>
+                <span style="font-size: 1.5rem;">🐝</span>
                 {% endif %}
                 </a>
 
