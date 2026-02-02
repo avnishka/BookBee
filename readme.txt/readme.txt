@@ -63,6 +63,9 @@ BookBee is a web-based platform designed to connect book lovers. It allows users
 
 ## 👤 Author
 **Avnishka Bhardwaj**
+**Aditi Gupta**
+**Abhya Sharma**
+**Anushka Joshi**
 B.Tech Computer Science Student
 
 ## 📜 License
